@@ -19,7 +19,7 @@ arxiv_url = "http://arxiv.org/"
 BASE_URL = "https://arxiv.paperswithcode.com/api/v0/papers/"
 
 KEEP   = "cs.CL"
-BLOCKS = {"cs.CV", "eess.AS", "cs.SD", "eess.SP", "q-bio.BM"}
+BLOCKS = {"cs.CV", "eess.AS", "cs.SD", "eess.SP", "q-bio.BM", "cs.AR", "cs.DC", "cs.PF"}
 
 
 def get_authors(authors, first_author=False):
@@ -132,7 +132,7 @@ def wrap_old_row(md_row: str) -> str:
     return "|".join(cells) + newline
 
 def update_json_file(filename, data_all):
-    with open(filename, "r") as f:
+    with open(filename, "r", encoding="utf-8") as f:
         content = f.read().strip()
     json_data = json.loads(content) if content else {}
 
@@ -144,7 +144,7 @@ def update_json_file(filename, data_all):
         for keyword, papers in data.items():
             json_data.setdefault(keyword, {}).update(papers)
 
-    with open(filename, "w") as f:
+    with open(filename, "w", encoding="utf-8") as f:
         json.dump(json_data, f, indent=2, ensure_ascii=False)
 
 def json_to_md(filename, md_filename,
@@ -162,7 +162,7 @@ def json_to_md(filename, md_filename,
     DateNow = str(DateNow)
     DateNow = DateNow.replace('-', '.')
 
-    with open(filename, "r") as f:
+    with open(filename, "r", encoding="utf-8") as f:
         content = f.read()
         if not content:
             data = {}
@@ -170,11 +170,11 @@ def json_to_md(filename, md_filename,
             data = json.loads(content)
 
     # clean README.md if daily already exist else create it
-    with open(md_filename, "w+") as f:
+    with open(md_filename, "w+", encoding="utf-8") as f:
         pass
 
     # write data into README.md
-    with open(md_filename, "a+") as f:
+    with open(md_filename, "a+", encoding="utf-8") as f:
 
         if (use_title == True) and (to_web == True):
             f.write("---\n" + "layout: default\n" + "---\n\n")
@@ -186,7 +186,7 @@ def json_to_md(filename, md_filename,
             f.write(f"[![Issues][issues-shield]][issues-url]\n\n")
 
         # add another code repository link
-        f.write("For more carefully curated articles, you can refer to this [repository](https://github.com/bansky-cl/Diffusion_NLP_Papers).\n\n")
+        f.write("For more carefully curated articles, you can refer to this [repository](https://github.com/bansky-cl/Mobile_NPU_LLM_Papers).\n\n")
 
         if use_title == True:
             f.write("## Updated on " + DateNow + "\n\n")
@@ -227,17 +227,17 @@ def json_to_md(filename, md_filename,
         if show_badge == True:
             # unk
             f.write(
-                f"[contributors-shield]: https://img.shields.io/github/contributors/bansky-cl/diffusion-nlp-paper-arxiv.svg?style=for-the-badge\n")
-            f.write(f"[contributors-url]: https://github.com/bansky-cl/diffusion-nlp-paper-arxiv/graphs/contributors\n")
+                f"[contributors-shield]: https://img.shields.io/github/contributors/bansky-cl/mobile-npu-llm-paper-arxiv.svg?style=for-the-badge\n")
+            f.write(f"[contributors-url]: https://github.com/bansky-cl/mobile-npu-llm-paper-arxiv/graphs/contributors\n")
             f.write(
-                f"[forks-shield]: https://img.shields.io/github/forks/bansky-cl/diffusion-nlp-paper-arxiv.svg?style=for-the-badge\n")
-            f.write(f"[forks-url]: https://github.com/bansky-cl/diffusion-nlp-paper-arxiv/network/members\n")
+                f"[forks-shield]: https://img.shields.io/github/forks/bansky-cl/mobile-npu-llm-paper-arxiv.svg?style=for-the-badge\n")
+            f.write(f"[forks-url]: https://github.com/bansky-cl/mobile-npu-llm-paper-arxiv/network/members\n")
             f.write(
-                f"[stars-shield]: https://img.shields.io/github/stars/bansky-cl/diffusion-nlp-paper-arxiv.svg?style=for-the-badge\n")
-            f.write(f"[stars-url]: https://github.com/bansky-cl/diffusion-nlp-paper-arxiv/stargazers\n")
+                f"[stars-shield]: https://img.shields.io/github/stars/bansky-cl/mobile-npu-llm-paper-arxiv.svg?style=for-the-badge\n")
+            f.write(f"[stars-url]: https://github.com/bansky-cl/mobile-npu-llm-paper-arxiv/stargazers\n")
             f.write(
-                f"[issues-shield]: https://img.shields.io/github/issues/bansky-cl/diffusion-nlp-paper-arxiv.svg?style=for-the-badge\n")
-            f.write(f"[issues-url]: https://github.com/bansky-cl/diffusion-nlp-paper-arxiv/issues\n\n")
+                f"[issues-shield]: https://img.shields.io/github/issues/bansky-cl/mobile-npu-llm-paper-arxiv.svg?style=for-the-badge\n")
+            f.write(f"[issues-url]: https://github.com/bansky-cl/mobile-npu-llm-paper-arxiv/issues\n\n")
 
     print("finished")
 
@@ -304,7 +304,7 @@ def json_to_trend(json_file: str | Path, img_file: str | Path) -> None:
     plt.tight_layout()
     plt.savefig(img_file, dpi=300)
     plt.close()
-    print(f"✅ trend save in: {img_file}")
+    print(f"trend save in: {img_file}")
 
 
 if __name__ == "__main__":
@@ -313,7 +313,9 @@ if __name__ == "__main__":
 
     # my keyword
     keywords = dict()
-    keywords["diffusion"] = "ti:\"diffusion\""  + "OR" + "ti:\" diffus\""
+    keywords["mobile_npu_llm"] = "ti:\"mobile\" AND (ti:\"NPU\" OR ti:\"neural processing unit\" OR ti:\"edge AI\" OR ti:\"on-device\") AND (ti:\"LLM\" OR ti:\"large language model\" OR ti:\"language model\")"
+    keywords["mobile_optimization"] = "ti:\"mobile\" AND (ti:\"optimization\" OR ti:\"quantization\" OR ti:\"pruning\" OR ti:\"compression\") AND (ti:\"LLM\" OR ti:\"language model\")"
+    keywords["edge_inference"] = "ti:\"edge\" AND (ti:\"inference\" OR ti:\"deployment\" OR ti:\"acceleration\") AND (ti:\"LLM\" OR ti:\"language model\")"
 
     for topic, keyword in keywords.items():
         print("Keyword: " + topic)
