@@ -18,8 +18,8 @@ arxiv_url = "http://arxiv.org/"
 
 BASE_URL = "https://arxiv.paperswithcode.com/api/v0/papers/"
 
-KEEP   = "cs.CL"
-BLOCKS = {"cs.CV", "eess.AS", "cs.SD", "eess.SP", "q-bio.BM", "cs.AR", "cs.DC", "cs.PF"}
+KEEP   = {"cs.CL", "cs.AI", "cs.DC", "cs.LG"}  # 扩展到AI、分布式计算、机器学习
+BLOCKS = {"cs.CV", "eess.AS", "cs.SD", "eess.SP", "q-bio.BM"}
 
 
 def get_authors(authors, first_author=False):
@@ -82,7 +82,8 @@ def get_daily_papers(topic, query, max_results=200):
     for res in iter_results_safe(client, search):
 
         cats = res.categories                 # e.g. ['cs.CL', 'cs.LG']
-        if (KEEP not in cats) or any(c in cats for c in BLOCKS):
+        # 检查是否有任何一个分类在KEEP中，且没有任何分类在BLOCKS中
+        if not any(c in KEEP for c in cats) or any(c in cats for c in BLOCKS):
             continue                        
 
         paper_id_full  = res.get_short_id()  
@@ -313,14 +314,17 @@ if __name__ == "__main__":
 
     # my keyword
     keywords = dict()
-    keywords["mobile_npu_llm"] = "ti:\"mobile\" AND (ti:\"NPU\" OR ti:\"neural processing unit\" OR ti:\"edge AI\" OR ti:\"on-device\") AND (ti:\"LLM\" OR ti:\"large language model\" OR ti:\"language model\")"
-    keywords["mobile_optimization"] = "ti:\"mobile\" AND (ti:\"optimization\" OR ti:\"quantization\" OR ti:\"pruning\" OR ti:\"compression\") AND (ti:\"LLM\" OR ti:\"language model\")"
-    keywords["edge_inference"] = "ti:\"edge\" AND (ti:\"inference\" OR ti:\"deployment\" OR ti:\"acceleration\") AND (ti:\"LLM\" OR ti:\"language model\")"
+    keywords["mobile_npu_llm"] = "(ti:\"mobile\" OR ti:\"smartphone\" OR ti:\"on-device\") AND (ti:\"NPU\" OR ti:\"neural processing unit\" OR ti:\"HTP\" OR ti:\"HeteroLLM\" OR ti:\"llm.npu\") AND (ti:\"LLM\" OR ti:\"large language model\" OR ti:\"language model\")"
+    keywords["mobile_optimization"] = "(ti:\"mobile\" OR ti:\"smartphone\" OR ti:\"on-device\") AND (ti:\"optimization\" OR ti:\"quantization\" OR ti:\"pruning\" OR ti:\"compression\" OR ti:\"acceleration\") AND (ti:\"LLM\" OR ti:\"language model\")"
+    keywords["edge_inference"] = "(ti:\"edge\" OR ti:\"mobile\" OR ti:\"smartphone\") AND (ti:\"inference\" OR ti:\"deployment\" OR ti:\"acceleration\" OR ti:\"runtime\") AND (ti:\"LLM\" OR ti:\"language model\")"
+    keywords["npu_acceleration"] = "(ti:\"NPU\" OR ti:\"neural processing unit\" OR ti:\"HTP\" OR ti:\"accelerator\") AND (ti:\"LLM\" OR ti:\"language model\" OR ti:\"inference\")"
+    keywords["mobile_llm_systems"] = "(ti:\"mobile\" OR ti:\"smartphone\" OR ti:\"on-device\") AND (ti:\"LLM\" OR ti:\"large language model\") AND (ti:\"system\" OR ti:\"framework\" OR ti:\"deployment\")"
+    keywords["specific_papers"] = "id:2509.23324 OR id:2407.05858 OR id:2501.14794"
 
     for topic, keyword in keywords.items():
         print("Keyword: " + topic)
 
-        data = get_daily_papers(topic, query=keyword, max_results=200)
+        data = get_daily_papers(topic, query=keyword, max_results=300)
         data_collector.append(data)
 
         print("\n")
